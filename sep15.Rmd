@@ -1,0 +1,80 @@
+---
+title: "sep15"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+data("BritishUnions")
+```
+
+```{r}
+#3.33a: Not very linear, maybe slightly positively linear. 
+ggplot(BritishUnions, aes(Unemployment, NetSupport)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+#3.33b: 5.980 * Unemployment - 67.660 = Net support
+#Ho: B1^ = 0, Ha: B1^ != 0
+#r^2 = 0.1106, t = 1.366, pval = 0.1921>0.10, df = 15. We can not reject the null hypothesis because of the massive pvalue and low test statistic. We do not have significant evidence to support that there is a linear relationship btwn net support and unemployment. COULD DO F TEST HERE
+mymodel <- lm(NetSupport~Unemployment, data = BritishUnions)
+
+summary(mymodel)
+
+#3.33c: -2.35767 * Unemployment + 0.53898 * Months - 65.51220 = Net Support
+# Ho: B1^ = 0, Ha: B1^ != 0
+#R^2 = 0.9431, t = -1.961, pval = 7.603e-10, df = 14. We reject the null hypothesis. We have significant evidence that, when time controlled for, there is a linear relationship between net support and unemployment. 
+mymod1 <- lm(NetSupport~Unemployment + Months, data = BritishUnions)
+
+summary(mymod1)
+
+#3.33d: The coefficient is very different. In the first question the slope was 5.98 and in the second it was -2.36. Something about time being controlled for caused a better linear relationship and a stronger fit of the model. The coefficient actually shows a strong negative linear relationship, rather than a shitty positive not linear relationship. 
+
+```
+
+```{r}
+data("FishEggs")
+#3.34a: -0.21033 * age + 38.70206 = PctDM, this indicates a negative linear relationship between the two. 
+mymodeel <- lm(PctDM~Age, data = FishEggs)
+
+summary(mymodeel)
+
+#3.34b: r^2 = 0.2004, 20.04% of the variability in PctDM is explained by age. 
+
+#3.34c: pval = 0.007001, the data is statistically significant because our pval is <0.05.
+
+#3.35d: Constant variance looks good, zero mean looks solid. No clear pattern. Eq variance looks good. 
+plot(mymodeel, 1:2)
+
+
+#3.35e:
+
+#ggplot(FishEggs, aes(Age, PctDM, color = Month)) +
+#  geom_point() 
+
+model <- lm(PctDM ~ Age, data = FishEggs)
+
+FishEggs$residuals <- residuals(model)
+FishEggs$fitted <- fitted(model)
+
+ggplot(FishEggs, aes(x = fitted, y = residuals, color = Month)) +
+  geom_point() +
+  labs(x = "Fitted values", y = "Residuals") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme_void()
+
+
+age.out = lm(PctDM~Age, data = FishEggs)
+
+plot(age.out, 1, col = FishEggs$Month)
+
+```
+
+
+
+
+
+
+
+

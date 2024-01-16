@@ -1,0 +1,58 @@
+---
+title: "stat206sep8"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+#2.55
+data("Caterpillars")
+```
+
+```{r}
+library(mosaic)
+#Mass, Intake, WetFrass, DryFrass, Cassim, Nassim
+cor.test(Nfrass~Mass, data = Caterpillars) #.8856
+cor.test(Nfrass~Intake, data = Caterpillars) #.9309
+cor.test(Nfrass~WetFrass, data = Caterpillars) #.9903, HIGHEST CORRELATION
+cor.test(Nfrass~DryFrass, data = Caterpillars) #.9827
+cor.test(Nfrass~Cassim, data = Caterpillars) #.8917
+cor.test(Nfrass~Nassim, data = Caterpillars) #.8407
+```
+
+```{r}
+#2.55b: y = 2.967e-04 + 9.675e-03x + epsilon
+ggplot(Caterpillars, aes(WetFrass, Nfrass)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("WetFrass vs Nfrass")
+mym1 <- lm(Nfrass~WetFrass, data = Caterpillars)
+
+summary(mym1)
+
+#2.55c:
+#Ho: P = 0, Ha: P not= 0. With t=113.358, pval=0<0.05, and r=.99, we can reject the null hypotheis that there is 0 correlation between WetFrass and Nfrass. We have sufficient evidence to conclude that there is a significant relationship between the two. 
+
+anova(mym1)
+
+cater1 = na.omit(Caterpillars)
+
+cor(cater1 [5:18])
+
+#2.55d
+plot(mym1, 1:2)
+#the residual plots are disgusting, not satisfied conditions and I'm not either. Concern for Equivariance, concern for linearity, NON-normal
+```
+
+
+
+
+
+
+
+
+
+
+
+

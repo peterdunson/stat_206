@@ -1,0 +1,86 @@
+---
+title: "sep_18"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+data("FishEggs")
+#3.34a: -0.21033 * age + 38.70206 = PctDM, this indicates a negative linear relationship between the two. 
+mymodeel <- lm(PctDM~Age, data = FishEggs)
+
+summary(mymodeel)
+
+#3.34b: r^2 = 0.2004, 20.04% of the variability in PctDM is explained by age. 
+
+#3.34c: pval = 0.007001, the data is statistically significant because our pval is <0.05.
+
+#3.35d: Constant variance looks good, zero mean looks solid. No clear pattern. Eq variance looks good. 
+plot(mymodeel, 1:2)
+
+
+#3.34e:
+
+#ggplot(FishEggs, aes(Age, PctDM, color = Month)) +
+#  geom_point() 
+
+model <- lm(PctDM ~ Age, data = FishEggs)
+
+FishEggs$residuals <- residuals(model)
+FishEggs$fitted <- fitted(model)
+
+ggplot(FishEggs, aes(x = fitted, y = residuals, color = Month)) +
+  geom_point() +
+  labs(x = "Fitted values", y = "Residuals") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal()
+
+
+age.out = lm(PctDM~Age, data = FishEggs)
+
+plot(age.out, 1, col = FishEggs$Month)
+
+
+
+#3.34f: Month isn't helping at all, get rid of Months. Age*Month and month resids looks back. 
+out3_1 <- lm(PctDM~Age*Month, data = FishEggs)
+out3_2 <- lm(PctDM~Age, data = FishEggs)
+out3_3 <- lm(PctDM~Month, data = FishEggs)
+summary(out3_1)
+summary(out3_2)
+summary(out3_3)
+
+#plot() hit resids
+plot(out3_1, 1:2)
+plot(out3_2, 1:2)
+plot(out3_3, 1:2)
+
+
+#3.34g: R^2 is 0.4303, so 43.03% of the variability is explained by the model. 
+summary(out3_1)
+#USE Multiple R^2 NOT Adjusted
+
+
+
+#3.34h: The Age*Month does not show any improvement over 
+model1 <- lm(PctDM~Age*Month, data = FishEggs)
+
+FishEggs$residuals <- residuals(model1)
+FishEggs$fitted <- fitted(model1)
+
+ggplot(FishEggs, aes(x = fitted, y = residuals, color = Month)) +
+  geom_point() +
+  labs(x = "Fitted values", y = "Residuals") +
+  geom_hline(yintercept = 0, linetype = "dashed", color = "red") +
+  theme_minimal()
+```
+
+
+
+
+
+
+
+
+

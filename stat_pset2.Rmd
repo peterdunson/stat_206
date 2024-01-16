@@ -1,0 +1,142 @@
+---
+title: "stat206PSET2"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+#2.8:
+#A regression equation was fit to a set of data for which the correlation, r, between X and Y was 0.6. Which of the following must be true?
+#ANSWER: C, "The regression model explains 36% of the variability in Y" - this is due to the fact that r^2 accounts for variability and .6^2 is .36. 
+
+```
+
+```{r}
+library(Stat2Data)
+library(ggplot2)
+#2.16:
+data("TextPrices")
+#2.16a: Ho: B1 is equal to 0, Ha: B1 is NOT equal to 0. t=7.653. P-Value=2.45e-08 < 0.05. df=28.
+#Conclusion: With t=7.653, df=28, pval basically equal to 0 we can reject the null hypothesis that B1 is equal to 0. We have sufficient evidence to claim that # of pages has a significant linear relationship with price of the textbook. 
+mytext <- lm(Price~Pages, data = TextPrices)
+summary(mytext)
+
+ggplot(TextPrices, aes(Pages, Price)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("Textbook pages affect on price")
+
+
+# This plot shows how the number of pages in a textbook affects price. This plot is important for checking conditions and seeing how well the data is fit.
+#REGRESSION LINE: 0.14733*pages -3.42231 = Price ($)
+
+#2.16b: 
+confint(mytext, level = .95) #between 0.1078959 and 0.186761
+
+#Conclusion pt. B: We are 95% confident that the average price increases between 0.1078959 and 0.186761 dollars for each extra page. 
+# Our slope is 0.14733, which means that for every added page, we estimate that the price will go up .14733 dollars on average. This lies right in between our 95% confidence interval, as the slope for the regression line is the average increase in price per page. 
+```
+
+
+```{r}
+library(Stat2Data)
+library(ggplot2)
+#2.26
+data("LeafWidth")
+
+#REGRESSION LINE: -0.017560*year + 37.723091 = Leaf Width(mm)
+
+#2.26a: The correlation coefficient is r=-0.2469483. There does not seem to be a significant relationship between Leaf Width and Year. Our correlation Coefficient is close to 0 which suggests that there is a lack of a linear relationship, but the pvalue is very low and the test statistic is high.
+#Ho: P = 0 <vs. Ha: P not= 0. With t=-4.0294, df=250, pval equivalent to zero <.05 we can reject the null hypothesis that there is no relationship between year and leaf width(mm). We have significant evidence to conclude that there is a non zero correlation between collection year and leaf width(mm). 
+myleaf <- lm(Width~Year, data = LeafWidth)
+summary(myleaf)
+#cor.test(Width~Year, data = LeafWidth) I HAD TO COMMENT THIS OUT BECAUSE IT WONT WORK WITH R MARKDOWN:
+
+#	Pearsons product-moment correlation
+
+#data:  Width and Year
+#t = -4.0294, df = 250, p-value = 7.425e-05
+#alternative hypothesis: true correlation is not equal to 0
+#95 percent confidence interval:
+# -0.3595491 -0.1272589
+#sample estimates:
+#       cor 
+#-0.2469483 
+
+#2.26b: The percent variation in width explained by the simple linear model with Year as a predictor and Width as a response is 0.06098 or 6.1%. This is the R^2 value which explains variability in Y (leaf width(mm)). 
+
+
+#2.26c: With F = 16.236, df(1,250), pval = 0<.05, we will reject that B1 = 0. We have sufficient evidence that a significant amount of variation in Width is explained by year. 
+anova(myleaf)
+#Width
+#           Df Sum Sq Mean Sq F value    Pr(>F)    
+#Year        1  32.91  32.911  16.236 7.425e-05 ***
+#Residuals 250 506.76   2.027 
+
+#2.26d: Square root of F-stat = 4.03, t-stat = -4.03, the absolute values of the two are the same.  
+```
+
+
+
+```{r}
+#2.29:
+data("Goldenrod")
+
+#REGRESSION LINE: 0.36821*Gall Diameter - 1.05211 = Wall Thickness
+
+#2.29a: Ho: B1 = 0, Ha: B1 not= 0. With t=-2.623, pval = 0<0.05, df=593, and r = .606 we can reject the null hypothesis that there is no linear relationship between gall diameter(mm) and wall thickness(mm). We have sufficient evidence to conclude that there is significant correlation between these variables. 
+mygold <- lm(Wall03~Gdiam03, data = Goldenrod)
+summary(mygold)
+
+ggplot(Goldenrod, aes(Gdiam03, Wall03)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  ggtitle("Gall Diameter (mm) vs Wall Thickness (mm)")
+
+#This plot is important for checking conditions and seeing how well the data is fit.
+
+#2.29b: The slope is 0.36821, which means for every mm the gall diameter gets larger, the wall thickness, on average, will be .36821 mm bigger. The standard error is 0.02004. 
+
+#2.29c: The typical error is 1.501 on 593 degrees of freedom. This means that the typical difference between the observed values and the predicted values is 1.501 units on average for wall thickness (response variable). 
+
+#2.29d: The scientist will not be satisfied with this model because only 0.3629 or 36% of the variability is accounted for by this model. The r^2 value tells us how much variability is explained.
+
+#2.29e: We are 95% confident that population mean wall thickness is between 6.191006 mm and 6.43336 mm for goldenrods with a gall diameter of 20mm. 
+newgold <- data.frame(Gdiam03 = c(20))
+predict.lm(mygold, newgold, interval="confidence", level=0.95)
+
+#2.29f: With an r^2 value of 0.3629, the correlation coefficient is .6068031. This r value showes a strong, positive, linear relationship between gall diameter and wall thickness
+summary(mygold)
+```
+
+
+
+```{r long-comment, tidy=TRUE, tidy.opts=list(width.cutoff=110)}
+#2.41
+data("LeafWidth")
+myleaf1 <- lm(Width~Year, data = LeafWidth)
+newleaf <- data.frame(Year = 2020)
+predict.lm(myleaf, newleaf, interval="confidence", level=0.95)
+
+ggplot(LeafWidth, aes(Width, Year)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+#This plot is important for checking conditions and seeing how well the data is fit.
+
+#2.41a: We are 95% confident that population mean leaf width (mm) is between 1.767426 mm and 2.735237 mm for leaves from year 2020. 
+#       fit      lwr      upr
+#1 2.251331 1.767426 2.735237
+
+
+#2.41b: We are 95% confidence that a single leaf from the year 2020 would be between -0.5941854 mm and 5.096848 mm wide. 
+predict.lm(myleaf, newleaf, interval="prediction", level=0.95)
+#       fit        lwr      upr
+#1 2.251331 -0.5941854 5.096848
+
+#2.41c: Already did that above. ^^^
+
+
+```
+

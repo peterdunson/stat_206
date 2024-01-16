@@ -1,0 +1,11 @@
+---
+title: "STAT 206"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+
+```
+

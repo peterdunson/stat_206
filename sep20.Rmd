@@ -1,0 +1,133 @@
+---
+title: "sep20"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+data("MLBStandings2016")
+```
+
+```{r}
+plot(MLBStandings2016)
+```
+
+```{r}
+Hit_alow <- lm(WinPct~HitsAllowed, data = MLBStandings2016)
+ERA <- lm(WinPct~ERA, data = MLBStandings2016)
+WHIP <- lm(WinPct~WHIP, data = MLBStandings2016)
+summary(Hit_alow) #R^2 = 0.5853, t = -6.286, pval = 8.50e-07
+summary(ERA) # R^2 = 0.6365, t = -7.002, pval = 1.29e-07
+summary(WHIP) # R^2 = 0.6056, t = -6.557, pval = 4.15e-07
+
+```
+
+```{r}
+ggplot(MLBStandings2016, aes(HitsAllowed, WinPct)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ggplot(MLBStandings2016, aes(ERA, WinPct)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+ggplot(MLBStandings2016, aes(WHIP, WinPct)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+```{r}
+plot(Hit_alow, 1:2) #looks bad for resids vs fits
+plot(ERA, 1:2) #passable
+plot(WHIP, 1:2) #passable
+```
+
+```{r}
+ERA_WHIP <- lm(WinPct~ERA+WHIP, data = MLBStandings2016)
+summary(ERA_WHIP)
+```
+
+```{r}
+plot(ERA_WHIP, 1:2)
+```
+
+```{r}
+ERA_WHIP1 <- lm(WinPct~ERA*WHIP, data = MLBStandings2016)
+summary(ERA_WHIP1) #TERRIBLE
+```
+
+```{r}
+ERA_quad <- lm(WinPct~WHIP*ERA + I(ERA ^ 2), data = MLBStandings2016)
+summary(ERA_quad)
+
+plot(ERA_quad, 1:2)
+
+#BEST FIT TO MODEL ^^^^^
+
+ggplot(MLBStandings2016, aes(ERA^2, WHIP)) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
+
+
+```{r}
+str(MLBStandings2016)
+
+# start by splitting data into training and testing sets
+test_id = sample(1:30,15, replace=FALSE)
+test = MLBStandings2016[test_id,]
+train = MLBStandings2016[-test_id,]
+```
+
+```{r}
+## consider best models of each size
+library(leaps)
+library(HH)
+
+# fit all models possible using the predictors you want to consider
+all = regsubsets(WinPct ~ Runs + Saves + WHIP,
+                 data=MLBStandings2016)
+
+# produce best model of each size
+summaryHH(all)
+
+RSW <- lm(WinPct~Runs + Saves + WHIP, data = MLBStandings2016)
+summary(RSW)
+
+#resid plots look very good
+plot(RSW, 1:2)
+```
+
+```{r}
+test_id = sample(1:30,5, replace=FALSE) 
+test = MLBStandings2016[test_id,]
+train = MLBStandings2016[-test_id,]
+```
+
+```{r}
+summary(out_train <- lm(WinPct ~ Runs + Saves + WHIP, data=train))
+
+# make predictions on test X's, using trained model
+preds = predict(out_train, test)
+
+# calculate and examine residuals
+CVresids = test$WinPct - preds
+mean(CVresids)
+var(CVresids)
+
+(MSE = (summary(out)$sigma)^2)
+
+r = cor(test$WinPct, preds)
+
+summary(out_train)
+
+# calculate shrinkage
+(shrinkage = 0.8977 - r^2)
+```
+
+
+
+
+

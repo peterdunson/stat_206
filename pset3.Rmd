@@ -1,0 +1,166 @@
+---
+title: "PSET3"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r}
+#3.12a: X1=BodySize, X2 = Ifgp, Y = Mrate
+#Mrate = B0 + B1 * BodySize + B2 * Ifgp + epsilon
+#Free growth: Mrate = B0 + B1 * BodySize + B2 * Ifgp (1) + epsilon
+#No free growth: Mrate = B0 + B1 * BodySize + epsilon
+
+#3.12b: As seen above... 
+#Mrate = B0 + B1 * BodySize + B2 * Ifgp + epsilon
+
+#3.12c: 
+#Full model: Mrate = B0 + B1 * BodySize + B2 * Ifgp + B3 * (BodySize * Ifgp) + epsilon
+#Reduced model: Mrate = B0 + B1 *BodySize + epsilon
+#The nested F Test would compare the SSE for the models, if the full model had less 
+#error that the reduced then two regression lines are probably necessary, but if the 
+#error was similar then the reduced model is probably fine. 
+```
+
+```{r}
+#3.26
+library(Stat2Data)
+library(ggplot2)
+data("Tadpoles")
+#3.26a: The plot seems to be somewhat positively linear, the control points have a 
+#larger gutlength and longer body on average than Bd. 
+ggplot(Tadpoles, aes(Body, GutLength, color = Treatment)) +
+  geom_point()
+#3.26b: REGRESSION LINE: GutLength = -20.764 + 10.280 * Body
+#Ho: B1 = 0, Ha: B1 != 0
+#With a t value of 4.204, a pvalue of .000293<0.05, 25 df, and an r^2 of .4141, 
+#we have significant evidence to reject the null hypothesis. We can conclude that 
+#there is a significant positive linear relationship between Body length (mm) and 
+#gut length (mm) in tadpoles.
+Gutbod <- lm(GutLength~Body, data = Tadpoles)
+summary(Gutbod)
+
+
+#3.26c:
+as.factor(Tadpoles$Treatment)
+Gut_treat_bod <- lm(GutLength~Body+Treatment, data = Tadpoles)
+summary(Gut_treat_bod)
+#as.numeric(Tadpoles$Treatment)
+as.factor(Tadpoles$Treatment)
+
+#Regression lines: Bd = 1, control = 2
+#Bd Model: GutLength = B0 + B1 * Body + B2 * Treatment (1, so just + B2) + epsilon
+#Bd Reg Line: GutLength = 15.47 + 8.07 * Body + 16.28
+#Control Model: GutLength = B0 + B1 * Body + B2 * Treatment + epsilon
+#Control Reg Line: GutLength = 15.47 + 8.07 * Body + 16.28 * Treatment 
+
+
+#3.26d:
+g_t_m_bod <- lm(GutLength~Body+Treatment+MouthpartDamage, data = Tadpoles)
+summary(g_t_m_bod)
+#Mouthpart model: GutLength = B0 + B1 * Body + B2 * Treatment + B3 
+#* MouthpartDamage + epsilon
+#Regression: GutLength = -20.258 + 6.442 * body + 25.412 * treatment (1 or 2) 
+#+ 96.839 * MouthpartDamage
+#More MouthpartDamage means a reduced food consumption. This could confound the 
+#variables so it is important to account for this in our model. The R^2 and pvalues 
+#are fairly solid here. 
+```
+
+```{r}
+#3.38:
+data("Diamonds")
+
+#3.38a: R^2 = .04748, adjusted R^2 = .042, t value for depth = .229 with a pvalue 
+#of .819>0.05 slope = 766.369, t value for depth^2 is -.130 with a p value of .897>0.05 
+#slope = -3.233
+modle <- lm(TotalPrice~Depth + I(Depth^2), data = Diamonds)
+summary(modle)
+
+#3.38b: R^2 = 0.8704, adjusted R^2 = 0.8696, tvalue for carat = 47.006 with a p value 
+#of 0<0.05 and slope = 15087.01, for depth the tvalue = -4.364 with a pvalue of 0<0.05 
+#and slope = -134.94. 
+modle2 <- lm(TotalPrice~Carat+Depth, data = Diamonds)
+summary(modle2)
+
+#3.38c: R^2 = 0.89, adjusted R^2 = 0.889
+#Carat: slope = -11827.73, t = -3.442, pval = 00.000648 < 0.05
+#Depth: slope = -598.18, t = -9.137, pval = < 2e-16 < 0.05
+#interaction term: slope = 408.45, t = 7.861, pval = 4.84e-14 < 0.05.
+modle3 <- lm(TotalPrice~Carat*Depth, data = Diamonds)
+summary(modle3)
+
+#3.38d: R^2 = 0.9313, adjusted R^2 = 0.9304
+#Carat: slope = 7573.620, t = 2.491, pval = 0.0132<0.05
+#Depth: slope = -728.700, t = -0.806, pval = 0.4210>0.05
+#Carat^2: slope = 4761.592, t = 14.418, pval = <2e-16<0.05
+#Depth^2: slope = 5.276, t = 0.784, pval = 0.4333>0.05
+#Carat:Depth: slope = -83.891, t = -1.567, pval = 0.1180>0.05
+modle4 <- lm(TotalPrice~Carat*Depth + I(Carat^2) + I(Depth^2), data = Diamonds)
+summary(modle4)
+
+#I think that the model in part d is the best fit. With the quadratic formula for 
+#carat and depth with the interaction term. 
+```
+
+```{r}
+#3.39a:
+modle4 <- lm(TotalPrice~Carat*Depth + I(Carat^2) + I(Depth^2), data = Diamonds)
+summary(modle4)
+plot(modle4, 1:2)
+#constant variance doesn't look great according to the resids vs fitted graph. 
+#There is a heavy weighting on the left side of the plot, and the variance is 
+#much greater in the middle. 
+#the QQ plot shows a very non-linear fit, telling us that normality is not met either. 
+
+#3.39b: This model still looks fairly solid. Our pvalues for certain predictors 
+#like depth, depth^2 and the interaction term are worse than before, but only 
+#depth^2 and carat:depth are no longer significant. The adjusted R^2 value is still 
+#high, at 0.9292. The t values are slightly worse, but still solid. This is still 
+#very reasonable for being a good predictor of log(TotalPrice)
+modle5 <- lm(log(TotalPrice)~Carat*Depth + I(Carat^2) + I(Depth^2), data = Diamonds)
+summary(modle5)
+
+
+#3.39c:
+plot(modle5, 1:2)
+#log(TotalPrice) looks much better for the residual plots. Constant variance looks 
+#great, the data is very evenly dispersed on the resids vs fits plot and our QQ plot 
+#has less of a pattern, looks much more normal. 
+```
+
+```{r}
+#3.46:
+model2 <- lm(TotalPrice~Carat*Depth + I(Carat^2) + I(Depth^2), data = Diamonds) 
+#model from 3.38d
+
+model1 <- lm(TotalPrice ~ Carat + Depth, data = Diamonds) #simpler model to 
+#compare against
+
+anova(model1, model2)
+
+
+#model1 has 348 df, model2 has 345. 
+#For the Residuals sums of squared, model 2 has a lower RSS value, and therefore 
+#explains more of the variance in the response variable. So model 2 has a better 
+#fit in terms of RSS.
+#The f stat is 102.12, which is high in this context. So model 2 explains alot 
+#more of the variance than model 1 does. 
+#The pval = 0<0.05, which means that the difference in fit btwn the two models 
+#IS significant.
+
+#The ANOVA table suggests that Model 2, full model with interaction and quadratic 
+#terms, provides a significantly better fit to the data compared to the reduced 
+#Model 1. Given the extremely low p-value, there is very strong evidence that the 
+#additional terms in Model 2 help explain more of the variance in TotalPrice. 
+
+```
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,88 @@
+---
+title: "pset5"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+```{r}
+library(Stat2Data)
+library(mosaic)
+#5.12:
+
+#a: Self reported speeds, observational study, not a randomized experiment,
+#b: The ones who reported that they listened to heavy metal are more likely to report 
+#speeding, this can be extended to other similar schools. 
+
+```
+
+
+```{r}
+#5.44 (only a/b)
+
+#5.44a:
+data("Olives")
+#Fenthion is the response, time is the explanatory, because it's the amount of fenthion 
+#left on the plant after a certain amount of time. 
+
+#5.44b: 
+timeee <- lm(Fenthion~factor(Time), data = Olives)
+plot(timeee)
+favstats(Fenthion~factor(Time), data = Olives)
+#Constant and additive: Yes the treatment are constant and additive based on the context.
+
+#Errors zero-mean: According to the resids vs fits plot, yes the errors are 0 mean visually.
+
+#Errors have same variance: This condition is not met, our lowest SD (.0678) * 2 is 
+#NOT greater than the largest SD (.173). The errors do NOT have the same variance.
+
+#Errors are normal: With so few observations it's hard to tell, but there is a slight 
+#curve in the Q-Q residuals plot, with pts 17 and 7 being fairly concerning. I 
+#would say that normality is not met, or at least very questionable.
+
+#errors are independent: The errors might not be independent because the amount of 
+#fenthion oil is dependent on the amount there was on the plant at a different time. 
+
+```
+
+
+```{r}
+#5.52:
+data("WordsWithFriends")
+methoddd <- lm(WinMargin~factor(Blanks), data = WordsWithFriends)
+
+#5.52a:
+plot(methoddd)
+#Constant and additive: Yes the treatment are constant and additive based on the context.
+
+#Errors zero-mean: According to the resids vs fits plot, yes the errors are 0 mean visually.
+
+#Errors have same variance: The smallest SD (25.7) * 2 is greater than the biggest SD 
+#(27.2). This condition is satisfied.
+
+#Errors are normal: The Q-Q resids plot looks slightly concerning, there are quite a few 
+#points on each tail that suggest non-normality, maybe a transformation of the data is needed? 
+
+#errors are independent: The errors are probably independent, one could try to get 
+#less/more blank tiles based on a previous game, but I assume its different players.
+favstats(WinMargin~factor(Blanks), data = WordsWithFriends)
+
+#5.52b:
+#Ho: mean0=mean1=mean2 or alpha0=alpha1=alpha2=0, for how # of blanks affects win margin
+#Ha: At least one alpha isn't equal to 0.
+
+methoddd <- lm(WinMargin~factor(Blanks), data = WordsWithFriends)
+anova(methoddd)
+#with an F=6.9884, df= (2,441) pval = .001028<0.05 we can reject the null hypothesis 
+#that the # of blanks has no affect on win margin (alpha values 0). We can conclude 
+#that the # of blanks does have a significant affect on win margin.
+
+```
+
+
+
+
+
+
+

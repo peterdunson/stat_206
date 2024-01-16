@@ -1,0 +1,109 @@
+---
+title: "oct11"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+#5.38:
+data("Meniscus")
+
+#5.38a
+#Ho: mean1=mean2=mean3 or alpha1=alpha2=alpha3=0, for mean stiffness based on method
+#Ha: at least two meani differ or at least one alphai != 0
+```
+
+```{r}
+#5.38b:
+plot(methoodstiff)
+#Constant and additive: Yes, based on the context of the problem
+#Errors zero-mean:  Zero means holds based on the resids vs fits plot
+#Errors have same variance: looking at fav stats, 2*minimum SD is greater than the maximum, which means this condition is satisfied.
+#Errors are normal: Looks good enough, maybe slightly worried abt pt 12.
+#errors are independent: Yes, they are very independent of one another, meniscus.
+favstats(Stiffness~Method, data = Meniscus) #x3*2 needs to be greater than x2
+
+#5.38c:
+methoodstiff <- lm(Stiffness~factor(Method), data = Meniscus) #factor method for more than one numeric
+anova(methoodstiff)
+#With f = 4.9811, df = (2,15), and a pval <0.05, we can conclude that at least one alphai is != 0. 
+#Yes, there is a significant difference in stiffness based on method. 
+
+summary(methoodstiff)
+```
+
+```{r}
+#5.38 extendended. 
+?Meniscus
+#5.38i:
+anova(methoodstiff)
+#Mean FasT-Fix: 7.70
+#mean suture: 7.75
+#7.75-7.7= 0.05
+#MSE = 1.061
+#t*=-2.13145
+#n1 = 6
+#n2 = 6
+
+.05 - 2.13145 * sqrt(1.061)*sqrt(1/6+1/6)
+.05 + 2.13145 * sqrt(1.061)*sqrt(1/6+1/6)
+
+#-1.217571, 1.317571
+
+favstats(Stiffness~factor(Method), data = Meniscus)
+qt(.025, df=15)
+```
+
+```{r}
+#5.38ii: effect size
+#SD = sqrt(1.061)
+#yi (hat) = 7.75
+#yj (hat) = 7.7
+.05/sqrt(1.061)
+#effect size: 0.0485414
+```
+
+```{r}
+#5.38iii:
+#Mean FasT-Fix: 7.70
+#mean arrow: 6.10
+#-7.7= 0.05
+#MSE = 1.061
+#t*=-2.13145
+#n1 = 6
+#n2 = 6
+
+#Arrow-FasT-Fix
+
+-1.6 - 2.13145 * sqrt(1.061)*sqrt(1/6+1/6)
+-1.6 + 2.13145 * sqrt(1.061)*sqrt(1/6+1/6)
+
+#-2.867571, -0.3324292
+```
+
+```{r}
+#5.38iiii: effect size
+#SD = sqrt(1.061)
+#yi (hat) = 6.10 (arrow)
+#yj (hat) = 7.7 (fasT-Fix)
+-1.6/sqrt(1.061)
+#effect size: -1.553325
+
+#fasT-Fix
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

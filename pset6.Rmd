@@ -1,0 +1,183 @@
+---
+title: "pset6"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+
+```{r}
+library(Stat2Data)
+library(mosaic)
+
+#5.44c: 
+data("Olives")
+
+log.grp.means = log(mean(Fenthion~Time, data = Olives))
+
+
+
+log.grp.sd = log(sd(Fenthion~Time, data = Olives))
+
+xyplot(log.grp.sd~log.grp.means, type=c("p","r"))
+(trnsline = lm(log.grp.sd~log.grp.means))
+
+#if 1 - slope =
+#1 => no change to y
+#.5 => sqrt y
+#0 => log y
+#-1 => 1/y
+
+#The diagnostic plot suggests that we do not do any transformations on Y. 1 - -1.401 = 2.401 which is greater than 1, so no change is needed. 
+
+```
+
+```{r}
+#5.56:
+data("Blood1")
+
+#5.56a: Two sample t tests are used to determine if two population means are equal, in this case we have 3 different populations: normal, overweight, and obese.
+
+#5.56b:
+?Blood1 #Overwt	0=normal, 1=overweight, or 2=obese
+
+
+BPcalc <- lm(SystolicBP~Overwt, data = Blood1) #factor method for more than one numeric
+anova(BPcalc)
+#With f = 38.093, df = (1,498), and a pval <0.05, we can conclude that at least one alphai is != 0. 
+#Yes, there is a significant difference in blood pressure based on weight. 
+
+#5.56c:
+
+Overwt1 <- factor(Blood1$Overwt)
+
+BPcalc1 <- aov(SystolicBP ~ Overwt1, data = Blood1)
+
+library(asbio)
+library(agricolae)
+
+LSDout <- LSD.test(BPcalc1, "Overwt1", group = TRUE, p.adj = "none")
+plot(LSDout)
+
+LSDout$groups
+
+```
+
+
+```{r}
+#6.2:
+
+#6.2a: Response: Height of Tomato Plants
+#6.2b: Factors: Type of Fertilizer (Factor 1), Amount of Water (Factor 2)
+#6.2c: Factor 1: Experimental, 3 levels (Regular Fertilizer, Organic Fertilizer, No Fertilizer)
+#Factor 2: Experimental, 2 levels (Normal Watering, Reduced Watering)
+#6.2d: Complete Block Design: No
+
+
+```
+
+```{r}
+#6.10:
+#a. Degrees of Freedom (DF) for Factor A:
+#DF Factor A = (3 - 1) = 2
+
+#b. Degrees of Freedom (DF) for Factor B:
+#DF Factor B = (3 - 1) = 2
+
+#c. Degrees of Freedom (DF) for Error:
+#DF Error = (1 - (2 + 2)) = (1 - 4) = -3
+
+```
+
+```{r}
+#6.12:
+#If your dataset has one facotr of interest and one blocking factor, and you carry 
+#out a two-way ANOVA, your SSE will be too SMALL (small/large) and you will be MORE 
+#(more, less) likely to detect real differences than would a one-way ANOVA.
+
+```
+
+```{r}
+#6.29a: You could measure each rat twice, one time for each hormone injection (leptin and insulin), and the order of the injections would have to be randomized.
+#like we did in AP Stats: 
+#Select male rats and female rats.
+#Randomly assign each rat to one of two time slots.
+#Time 1, inject hormones (e.g., leptin) in all rats.
+#Time 2, inject hormones (e.g., insulin) in all rats.
+#Measure amount eaten in Time 1 and Time 2 for each rat.
+
+#6.29b:
+#Reasons to not use blocks: 
+#takes much longer to do both treatments to all the rats, can't run simultaneously, 
+#and also uses more reasources.
+#blocking minimizes variability, which may not be a good thing in this case.
+
+```
+
+```{r}
+#6.36a:
+data("Alfalfa")
+
+favstats(Ht4~Row, data = Alfalfa)
+#mean a: 1.16
+#mean b: 1.57	
+#mean c: 1.25	
+#mean d: 2.26	
+#mean e: 2.46
+favstats(Ht4 ~ 1, data = Alfalfa)
+#mean for all 15: 1.74
+#SD for all 15: 1.105396
+
+
+#6.36b:
+
+out = aov(Ht4~Acid + Row, data=Alfalfa)
+anova(out)
+
+#6.36c:
+
+time <- lm(Ht4~Acid, data = Alfalfa)
+plot(time)
+favstats(Ht4~Acid, data = Alfalfa)
+#Constant and additive: Yes the treatment are constant and additive based on the context.
+
+#Errors zero-mean: According to the resids vs fits plot, yes the errors are 0 mean visually.
+
+#Errors have same variance: This condition is not met, our lowest SD (.4312) * 2 is 
+#NOT greater than the largest SD (1.31). The errors do NOT have the same variance.
+
+#Errors are normal: With so few observations it's hard to tell, but there is a very 
+#concerning curve upwards on the right hand side. points 9 and 5 are especially concerning.
+
+#errors are independent: The errors are independent. The collection of the data was
+#done in a good environment and no contamination could be found.
+
+
+#6.36d: With an F=4.5132, df = (2, 8), p val < 0.05, there is significant evidence to 
+#conclude that at least one alpha i is not 0, so there is a significant difference in 
+#the average growth due to the treatments.
+
+#6.36e: With an F= 1.3776, df = (4,8), p val .32 > 0.05, I can not conclude that at 
+#least one alpha i is not equal to 0, so I can't conclude that there is not a significant 
+#difference in average growth due to distance from the window. 
+```
+
+```{r}
+#6.37:
+LSDalf <- aov(Ht4~Acid, data=Alfalfa)
+
+library(asbio)
+library(agricolae)
+
+pairwise.t.test(Alfalfa$Ht4, Alfalfa$Acid, p.adj="none") 
+
+(LSDout = pairw.anova(Alfalfa$Ht4,Alfalfa$Acid,method="lsd"))
+plot(LSDout)
+plot(LSDout, type=2)
+```
+
+
+
+
+
+

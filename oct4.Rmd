@@ -1,0 +1,38 @@
+---
+title: "Oct4"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+data = "BaseballTimes2017"
+```
+
+```{r}
+pitat <- lm(Time~Pitchers + Attendance, BaseballTimes2017)
+```
+
+```{r}
+summary(pitat) 
+MSE = (summary(pitat)$sigma)^2
+MSE #270.7208
+```
+
+```{r}
+# shuffle GPAs and do EDA
+shuff.GPA = shuffle(SATGPA$GPA)
+plot(shuff.GPA ~ VerbalSAT, data=SATGPA)
+cor(shuff.GPA ~ VerbalSAT, data=SATGPA)
+
+# Shuffle many times to get distribution of correlations
+randcorr = do(10000)*cor(shuffle(GPA) ~ VerbalSAT, data=SATGPA)
+```
+
+
+
+
+
+
+
+

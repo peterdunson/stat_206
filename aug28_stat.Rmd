@@ -1,0 +1,27 @@
+---
+title: "aug 28"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+install.packages("Stat2Data")
+```
+
+```{r}
+data(Marathon)
+```
+
+```{r}
+Marathon$After2004 = as.factor(Marathon$After2004)
+```
+
+```{r}
+
+```
+
+
+
+

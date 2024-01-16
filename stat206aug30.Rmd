@@ -1,0 +1,109 @@
+---
+title: "aug30"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+
+```
+
+
+```{r}
+(m = mean(Miles~After2004, data=Marathon))
+```
+
+
+```{r}
+as.numeric(Marathon$After2004)
+```
+
+```{r}
+resids = Marathon$Miles - (Marathon$After2004=="0")*m[1] - (Marathon$After2004=="1")*m[2]
+```
+
+
+```{r}
+#ggplot(Marathon, aes(After2004, resids)) +
+ # geom_point() +
+#geom_jitter()
+
+```
+
+```{r}
+dotplot(resids~After2004, data=Marathon, jitter.x=TRUE)
+```
+
+```{r}
+histogram(resids)
+histogram(~resids |After2004, data=Marathon)
+
+qqnorm(resids)
+qqline(resids)
+```
+
+```{r}
+boxplot(Miles~After2004, data=Marathon)
+t.test(Miles~After2004, data=Marathon)
+#Change the confidence level to get a 92% confidence interval for the difference in the means for the 
+#two types of After2004.
+help(t.test)
+t.test(Miles~After2004, data=Marathon, conf.level = .92)
+#Conduct a pooled t test to see if the two means are different.
+t.test(Miles~After2004, data=Marathon, var.equal=TRUE)
+```
+
+```{r}
+favstats(Miles~After2004, data=Marathon)
+```
+
+```{r}
+data("BaseballTimes2017")
+```
+
+```{r}
+#baseball
+boxplot(breaks~wool, data=warpbreaks)
+t.test(breaks~wool, data=warpbreaks)
+#Change the confidence level to get a 92% confidence interval for the difference in the means for the 
+#two types of wool.
+help(t.test)
+t.test(breaks~wool, data=warpbreaks, conf.level = .92)
+#Conduct a pooled t test to see if the two means are different.
+t.test(breaks~wool, data=warpbreaks, var.equal=TRUE)
+#WE SHOULD HAVE CHECKED IF THE VARIANCES WERE EQUAL BEFORE MAKING THAT ASSUMPTION.
+library(mosaic)
+favstats(breaks~wool, data=warpbreaks)
+```
+
+
+```{r}
+(m = mean(~Time, data=BaseballTimes2017))
+```
+
+
+
+
+
+```{r}
+resids = BaseballTimes2017$Time - (BaseballTimes2017$Time=="0")*m[1] - (BaseballTimes2017$After2004=="1")*m[2]
+```
+
+```{r}
+#<- is opt - %>%  is cmd shft m
+```
+
+
+
+```{r}
+dotplot(resids~Time, data=BaseballTimes2017, jitter.x=TRUE)
+#lm(resids)
+```
+
+
+
+
+
+
+

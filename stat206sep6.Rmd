@@ -1,0 +1,63 @@
+---
+title: "stat206sep6"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r}
+#2.58
+data("InfantMortality2010")
+
+ggplot(InfantMortality2010, aes(Year, Mortality)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("Year vs Mortality")
+#2.58a, doesn't look linear.
+
+myinfant <- lm(Mortality~Year, data = InfantMortality2010)
+plot(myinfant, 1:2)
+#2.58b, residuals vs fitted looks terrible, a pattern in the graph and not constant variance. 
+#constant variance fails
+#linearity fails
+#zero mean is met
+#independence is met
+#normality is met with flying colors
+histogram(Mortality~Year, data = InfantMortality2010)
+
+#2.58c, log(mortality) looks amazing
+ggplot(InfantMortality2010, aes(Year, log(Mortality))) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("Year vs log(Mortality)")
+
+myinfant1 <- lm(log(Mortality)~Year, data = InfantMortality2010)
+plot(myinfant1, 1:2)
+
+histogram(log(Mortality)~Year, data = InfantMortality2010)
+
+#2.58d
+summary(myinfant1) #.99 r^2
+summary(myinfant) #.86 r^2
+
+#2.58e
+#make a statistical statement about infant mortality in the year 2010. 
+
+#we are 95% confident that an individual log(mortality) rate in the year 2010 is between 1.446 deaths/1000 births and 1.93 deaths/1000 births.
+
+#confidence interval
+#       fit      lwr      upr
+#1 1.690483 1.566864 1.814102
+
+#prediction interval
+#       fit     lwr      upr
+#1 1.690483 1.44652 1.934446
+df1 = data.frame(Year = 2010)
+#cor.test(y~x,...)
+predict.lm(myinfant1, df1, interval = "confidence", level = .95)
+predict.lm(myinfant1, df1, interval = "prediction", level = .95)
+```
+
+
+
+

@@ -1,0 +1,158 @@
+---
+title: "STAT206sep4"
+author: "Peter"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+
+```{r}
+data("BaseballTimes2017")
+```
+
+```{r}
+#1.45a: Time is pretty well varied, it has a heavier tail on the shorter games, and fewer ones over 210 min.
+dotplot(~Time, data = BaseballTimes2017)l
+histogram(~Time, data = BaseballTimes2017)
+
+#1.45b: we found that runs has the biggest effect on time, or at least the most linear 
+#relationship. Many of them are not linear at all.
+plot(BaseballTimes2017 [,c(7,3:6)])
+
+#1.45c: Runs. Time (hat) = 4.181 * Runs + 148.043, the slope coefficient is 4.181, so for 
+#every run the time increases by 4.181 minutes.
+
+ggplot(BaseballTimes2017, aes(Runs, Time)) +
+  geom_point() +
+  geom_smooth(method = "lm", se=TRUE) +
+  ggtitle("Runs vs Time")
+
+mymodel = lm(Time~Runs, data = BaseballTimes2017)
+plot(mymodel, 1:2)
+dotplot
+
+summary(mymodel)
+
+#1.45d: Linearity is met, zero means is not met, normality is met, independence is met, constant variance is not met. 
+```
+
+```{r 1.46}
+#1.46a: slight influence, I thought the slope would increase slightly.
+
+#1.46b: slight change in equation, old: Time = 4.181 * Runs + 148.043, 
+#new (without point 6): Time = 4.299 * Runs + 146.972
+
+mymodel1 <- lm(Time~Runs, data = BaseballTimes2017 [-6, ])
+
+b <- 146.972
+m <- 4.299
+
+ggplot(BaseballTimes2017, aes(Runs, Time)) +
+  geom_point() +
+  geom_smooth(method = "lm", se=TRUE) +
+  geom_abline(intercept = b, slope = m, color = "red", size = .5) +
+  ggtitle("Runs vs Time")
+  
+summary(mymodel1)
+summary(mymodel)
+```
+
+```{r}
+plot(BaseballTimes2017 [-6,c(7, 3:6)])
+```
+
+```{r}
+mymodel3 <- lm(Time~Pitchers, data = BaseballTimes2017 [-6, ])
+summary(mymodel3)
+#1.46c: Pitchers affect on time is more linear, after omitting point 6.
+```
+
+#1.50
+
+```{r}
+#1.50
+data("CountyHealth")
+
+ggplot(CountyHealth, aes(Hospitals, MDs)) +
+  geom_point() +
+  geom_smooth(method = "lm", se = TRUE) +
+  ggtitle("Hospitals vs MDs")
+
+#1.50 LOG Hospitals
+ggplot(CountyHealth, aes(log(Hospitals), MDs)) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("log(Hospitals) vs MDs")
+
+#1.50 LOG MDs
+
+ggplot(CountyHealth, aes(Hospitals, log(MDs))) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("Hospitals vs log(MDs)")
+
+#1.50 LOG both
+
+ggplot(CountyHealth, aes(log(Hospitals), log(MDs))) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("log(Hospitals) vs log(MDs)")
+
+#1.50 sqrt MDs
+
+ggplot(CountyHealth, aes(Hospitals, sqrt(MDs))) +
+  geom_point() +
+  geom_smooth(method = "lm") +
+  ggtitle("Hospitals vs sqrt(MDs)")
+
+#Conclusion on regression: I like the sqrt the most of these, aside from the one with no transformations. Log doesn't seem to help much here, maybe log of hospitals if anything. 
+```
+
+```{r}
+#1.50 BASIC NO TRANSFORMATIONS
+mymod <- lm(MDs~Hospitals, data = CountyHealth) 
+summary(mymod)
+plot(mymod, 1:2)
+```
+
+```{r}
+#1.50 LOG HOSPITALS, doesn't really help much with conditions
+mymod1 <- lm(MDs~log(Hospitals), data = CountyHealth) #R squared of .7189
+summary(mymod1)
+plot(mymod1, 1:2)
+```
+
+```{r}
+#1.50 LOG MDS, don't really love the residuals vs fitted graph, but QQ looks great
+mymod2 <- lm(log(MDs)~Hospitals, data = CountyHealth)
+summary(mymod2)
+plot(mymod2, 1:2)
+```
+
+```{r}
+#1.50 LOG BOTH, constant variance still looks dreadful
+mymod3 <- lm(log(MDs)~log(Hospitals), data = CountyHealth)
+summary(mymod3)
+plot(mymod3, 1:2)
+```
+
+```{r}
+#1.50 sqrt MDs, looks better than any of the other Log transformations.
+mymod4 <- lm(sqrt(MDs)~Hospitals, data = CountyHealth) 
+summary(mymod4)
+plot(mymod4, 1:2)
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+

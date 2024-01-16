@@ -1,0 +1,12 @@
+---
+title: "stat206sep1"
+author: "Peter"
+date: '`r Sys.Date()`'
+output: html_document
+---
+
+
+```{r}
+data("BaseballTimes2017")
+```
+
